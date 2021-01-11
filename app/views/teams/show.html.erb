@@ -5,4 +5,13 @@
   <%= @team.name %>
 </p>
 
+<ul>
+  <% @team.players.each do |player| %>
+    <li>
+      <p><%= "#{player.first_name} #{player.last_name}" %></p>
+      <p><%= "Position: #{player.position}" %></p>
+      <p><%= "Goals: #{player.goals}, Assists: #{player.assists}, Clean sheets: #{player.clean_sheets}" %></p>
+    </li>
+  <% end %>
+</ul>
 <%= link_to 'Back', teams_path %>
