@@ -32,5 +32,13 @@ def players
   end
 end
 
+def add_random_predictions
+  Player.all.each do |player|
+    prediction = rand(1..100)
+    player.update(prediction: prediction)
+  end
+end
+
 teams
 players
+add_random_predictions
