@@ -7,12 +7,14 @@ RSpec.describe "team_optimizer" do
     100.times do
       create(:player)
     end
+    @goalie = create(:player, prediction: 100)
+    @optimal = TeamOptimizer.generate_optimal
   end
 
   describe '#select_goalie' do
     context 'when there is no tie in scores' do
       it 'selects one top goalie' do
-        player = create(:player, prediction: 100)
+         # expect(@optimal). to have @goalie
       end
     end
 
