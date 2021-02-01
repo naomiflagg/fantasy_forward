@@ -1,8 +1,5 @@
 class TeamOptimizer
-  def self.generate_optimal()
-    goalie_benchmark = Player.where(position: 'Goalkeeper').order(prediction: :desc).first.prediction
-    goalies = Player.where(position: 'Goalkeeper').where('prediction >= ?', goalie_benchmark)
-    
+  def self.generate_optimal()   
     defender_benchmark = Player.where(position: 'Defender').order(prediction: :desc)[4].prediction
     defenders = Player.where(position: 'Defender').where('prediction >= ?', defender_benchmark)
 
@@ -15,6 +12,11 @@ class TeamOptimizer
     possible_teams = enumerate_possible_teams(goalies, defenders, midfielders, forwards)
     scores = possible_teams.map { |possible_team| estimate_score(possible_team) }
     scores.sort.first
+  end
+
+  def self.select_goalie
+    goalie_benchmark = Player.where(position: 'Goalkeeper').order(prediction: :desc).first.prediction
+    Player.where(position: 'Goalkeeper').where('prediction >= ?', goalie_benchmark)
   end
 
   def self.enumerate_possible_teams(goalie, defenders, mids, forwards)

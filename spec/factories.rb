@@ -7,7 +7,7 @@ FactoryBot.define do
   factory :player do
     first_name { Faker::Name.male_first_name }
     last_name { Faker::Name.unique.last_name }
-    position { ['goalkeeper', 'defender', 'midfielder', 'forward'].sample }
+    position { ['Goalkeeper', 'Defender', 'Midfielder', 'Forward'].sample }
     points { rand(90) }
     goals { rand(30) }
     assists { rand(30) }
