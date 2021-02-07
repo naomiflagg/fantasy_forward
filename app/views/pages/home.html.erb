@@ -2,5 +2,14 @@
 
 <h2>This week's dream team:</h2>
 
+<ul>
+  <% @team.each do |player| %>
+    <li>
+      <p><%= "#{player.first_name} #{player.last_name}" %></p>
+      <p><%= "Position: #{player.position}" %></p>
+      <p><%= "Team: #{player.team.name}" %>
+    </li>
+  <% end %>
+</ul>
 
 <%= link_to 'View all teams', teams_path %>

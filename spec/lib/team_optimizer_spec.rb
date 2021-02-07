@@ -7,44 +7,52 @@ RSpec.describe 'team_optimizer' do
     100.times do
       create(:player)
     end
-    @goalie = create(:player, position: 'Goalkeeper', prediction: 101)
-    @bad_goalie = create(:player, position: 'Goalkeeper', prediction: 100)
+    @goalie1 = create(:player, position: 'Goalkeeper', prediction: 101)
+    @goalie2 = create(:player, position: 'Goalkeeper', prediction: 100)
+    @goalies = TeamOptimizer.select_goalie
+    @defender1 = create(:player, position: 'Defender', prediction: 110)
+    @defender2 = create(:player, position: 'Defender', prediction: 100)
+    @defender3 = create(:player, position: 'Defender', prediction: 99)
+    @defender4 = create(:player, position: 'Defender', prediction: 110)
+    @defender5 = create(:player, position: 'Defender', prediction: 101)
+    @defender6 = create(:player, position: 'Defender', prediction: 98)
+    @defenders = TeamOptimizer.select_defenders
+    @mid1 = create(:player, position: 'Midfielder', prediction: 101)
+    @mid2 = create(:player, position: 'Midfielder', prediction: 99)
+    @mid3 = create(:player, position: 'Midfielder', prediction: 102)
+    @mid4 = create(:player, position: 'Midfielder', prediction: 102)
+    @mid5 = create(:player, position: 'Midfielder', prediction: 101)
+    @mid6 = create(:player, position: 'Midfielder', prediction: 98)
+    @mids = TeamOptimizer.select_midfielders
+    @forward1 = create(:player, position: 'Forward', prediction: 101)
+    @forward2 = create(:player, position: 'Forward', prediction: 100)
+    @forward3 = create(:player, position: 'Forward', prediction: 101)
+    @forward4 = create(:player, position: 'Forward', prediction: 99)
+    @forwards = TeamOptimizer.select_forwards
   end
 
   describe '#select_goalie' do
     context 'when there is no tie in scores' do
       it 'selects one top goalie' do
-        goalie = TeamOptimizer.select_goalie
-        expect(goalie.include?(@goalie)).to be true
+        expect(@goalies.include?(@goalie1)).to be true
       end
     end
 
     context 'when top score is shared' do
       it 'selects all goalies with that score' do
-        goalie2 = create(:player, position: 'Goalkeeper', prediction: 101)
+        goalie3 = create(:player, position: 'Goalkeeper', prediction: 101)
         goalie = TeamOptimizer.select_goalie
-        expect(goalie.include?(goalie2)).to be true
-        expect(goalie.include?(@goalie)).to be true
+        expect(goalie.include?(goalie3)).to be true
+        expect(goalie.include?(@goalie1)).to be true
       end
     end
 
     it 'does not include goalie with lower score' do
-      goalie = TeamOptimizer.select_goalie
-      expect(goalie.include?(@bad_goalie)).to be false
+      expect(@goalies.include?(@goalie2)).to be false
     end
   end
 
   describe '#select_defenders' do
-    before(:all) do
-      @defender1 = create(:player, position: 'Defender', prediction: 101)
-      @defender2 = create(:player, position: 'Defender', prediction: 100)
-      @defender3 = create(:player, position: 'Defender', prediction: 99)
-      @defender4 = create(:player, position: 'Defender', prediction: 102)
-      @defender5 = create(:player, position: 'Defender', prediction: 101)
-      @defender6 = create(:player, position: 'Defender', prediction: 98)
-      @defenders = TeamOptimizer.select_defenders
-    end
-
     context 'when there is no tie in scores' do
       it 'selects only 5' do
         expect(@defenders.count).to eq(5)
@@ -74,16 +82,6 @@ RSpec.describe 'team_optimizer' do
   end
 
   describe '#select_midfielders' do
-    before(:all) do
-      @mid1 = create(:player, position: 'Midfielder', prediction: 101)
-      @mid2 = create(:player, position: 'Midfielder', prediction: 99)
-      @mid3 = create(:player, position: 'Midfielder', prediction: 102)
-      @mid4 = create(:player, position: 'Midfielder', prediction: 102)
-      @mid5 = create(:player, position: 'Midfielder', prediction: 101)
-      @mid6 = create(:player, position: 'Midfielder', prediction: 98)
-      @mids = TeamOptimizer.select_midfielders
-    end
-
     context 'when there is no tie in scores' do
       it 'selects only 5' do
         expect(@mids.count).to eq(5)
@@ -112,15 +110,7 @@ RSpec.describe 'team_optimizer' do
     end
   end
 
-  describe '#select_forwards do' do
-    before(:all) do
-      @forward1 = create(:player, position: 'Forward', prediction: 101)
-      @forward2 = create(:player, position: 'Forward', prediction: 100)
-      @forward3 = create(:player, position: 'Forward', prediction: 101)
-      @forward4 = create(:player, position: 'Forward', prediction: 99)
-      @forwards = TeamOptimizer.select_forwards
-    end
-
+  describe '#select_forwards' do
     context 'when there is no tie in scores' do
       it 'selects only 3' do
         expect(@forwards.count).to eq(3)
@@ -144,6 +134,13 @@ RSpec.describe 'team_optimizer' do
 
     it 'does not include defender with lower score' do
       expect(@forwards.include?(@forward4)).to be false
+    end
+  end
+
+  describe '#create_team' do
+    it 'selects at least 11 players' do
+      team = TeamOptimizer.create_team
+      expect(team.length).to be >= 11
     end
   end
 end
