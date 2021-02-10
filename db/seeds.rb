@@ -3,42 +3,35 @@
 require 'httparty'
 require 'json'
 
-
-
+# Run once before season begins
 def teams
   Team.destroy_all
   response = HTTParty.get('https://fantasy.premierleague.com/api/bootstrap-static/')
   response.parsed_response
-  unless response.nil?
-    response['teams'].each do |team|
-      Team.create(name: "#{team['name']}", code: "#{team['code']}")
-    end
-  else
+  if response.nil?
     puts 'error seeding teams'
+  else
+    response['teams'].each do |team|
+      Team.create(name: (team['name']).to_s, code: (team['code']).to_s)
+    end
   end
 end
 
 def players
-  positions = {1 => 'Goalkeeper', 2 => 'Defender', 3 => 'Midfielder', 4 => 'Forward'}
+  positions = { 1 => 'Goalkeeper', 2 => 'Defender', 3 => 'Midfielder', 4 => 'Forward' }
   Player.delete_all
   response = HTTParty.get('https://fantasy.premierleague.com/api/bootstrap-static/')
   response.parsed_response
-  unless response.nil?
+  if response.nil?
+    puts 'error seeding players'
+  else
     response['elements'].each do |element|
       if element['status'] == 'a'
-        Player.create(first_name: "#{element['first_name']}", last_name: "#{element['second_name']}", goals: "#{element['goals_scored']}", assists: "#{element['assists']}", clean_sheets: "#{element['clean_sheets']}", points: "#{element['total_points']}", position: "#{positions[element['element_type']]}", team: Team.find_by(code: "#{element['team_code']}"))
+        Player.create(first_name: (element['first_name']).to_s, last_name: (element['second_name']).to_s,
+                      goals: (element['goals_scored']).to_s, assists: (element['assists']).to_s, clean_sheets: (element['clean_sheets']).to_s, points: (element['total_points']).to_s, position: (positions[element['element_type']]).to_s, prediction: (element['ep_next']).to_s, team: Team.find_by(code: (element['team_code']).to_s))
       end
     end
   end
 end
 
-def add_random_predictions
-  Player.all.each do |player|
-    prediction = rand(1..100)
-    player.update(prediction: prediction)
-  end
-end
-
-teams
 players
-add_random_predictions

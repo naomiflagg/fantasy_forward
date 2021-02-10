@@ -1,12 +1,5 @@
 class TeamOptimizer
-  def self.generate_optimal()   
-    possible_teams = enumerate_possible_teams(goalies, defenders, midfielders, forwards)
-    scores = possible_teams.map { |possible_team| estimate_score(possible_team) }
-    scores.sort.first
-  end
-  
-  # Refactor needed - turn below four into one function that takes arguments for position and number of players.
-
+  # To do: refactor below four into one function that takes arguments for position and number of players.
   def self.select_goalie
     goalie_benchmark = Player.where(position: 'Goalkeeper').order(prediction: :desc).first.prediction
     Player.where(position: 'Goalkeeper').where('prediction >= ?', goalie_benchmark)
@@ -27,10 +20,11 @@ class TeamOptimizer
     Player.where(position: 'Forward').where('prediction >= ?', forward_benchmark)
   end
 
+  # To do: split below function in to several pieces
   def self.create_team
     team = []
     # Doesn't take into account ties
-    select_goalie.each { |goalie| team.push(goalie) } 
+    select_goalie.each { |goalie| team.push(goalie) }
     defenders = select_defenders
     defenders.limit(3).each { |defender| team.push(defender) }
     mids = select_midfielders
@@ -59,9 +53,5 @@ class TeamOptimizer
       end
     end
     team
-  end
-  
-  def self.estimate_score(possible_team)
-  
   end
 end
