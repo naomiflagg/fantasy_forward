@@ -19,17 +19,17 @@ end
 
 def players
   positions = { 1 => 'Goalkeeper', 2 => 'Defender', 3 => 'Midfielder', 4 => 'Forward' }
-  Player.delete_all
   response = HTTParty.get('https://fantasy.premierleague.com/api/bootstrap-static/')
   response.parsed_response
   if response.nil?
     puts 'error seeding players'
   else
     response['elements'].each do |element|
-      if element['status'] == 'a'
-        Player.create(first_name: (element['first_name']).to_s, last_name: (element['second_name']).to_s,
-                      goals: (element['goals_scored']).to_s, assists: (element['assists']).to_s, clean_sheets: (element['clean_sheets']).to_s, points: (element['total_points']).to_s, position: (positions[element['element_type']]).to_s, prediction: (element['ep_next']).to_s, team: Team.find_by(code: (element['team_code']).to_s))
-      end
+      f_name = element['first_name'].to_s
+      l_name = element['second_name'].to_s
+      player = Player.find_or_initialize_by(first_name: f_name, last_name: l_name)
+      player.update!(goals: element['goals_scored'], assists: element['assists'],
+                     clean_sheets: element['clean_sheets'], points: element['total_points'], position: (positions[element['element_type']]).to_s, prediction: element['ep_next'], team: Team.find_by(code: (element['team_code']).to_s))
     end
   end
 end
