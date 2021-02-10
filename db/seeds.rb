@@ -5,12 +5,12 @@ require 'json'
 
 # Run once before season begins
 def seed_teams
-  Team.destroy_all
   response = HTTParty.get('https://fantasy.premierleague.com/api/bootstrap-static/')
   response.parsed_response
   if response.nil?
     puts 'error seeding teams'
   else
+    Team.destroy_all
     response['teams'].each do |team|
       Team.create(name: (team['name']).to_s, code: (team['code']).to_s)
     end
@@ -18,13 +18,13 @@ def seed_teams
 end
 
 def seed_players
-  Player.destroy_all
   positions = { 1 => 'Goalkeeper', 2 => 'Defender', 3 => 'Midfielder', 4 => 'Forward' }
   response = HTTParty.get('https://fantasy.premierleague.com/api/bootstrap-static/')
   response.parsed_response
   if response.nil?
     puts 'error seeding players'
   else
+    Player.destroy_all
     response['elements'].each do |element|
       Player.create do |p|
         p.first_name = element['first_name'].to_s
