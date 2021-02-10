@@ -27,7 +27,7 @@ def players
     response['elements'].each do |element|
       f_name = element['first_name'].to_s
       l_name = element['second_name'].to_s
-      player = Player.find_or_initialize_by(first_name: f_name, last_name: l_name)
+      player = Player.where(first_name: f_name, last_name: l_name).first_or_initialize
       player.update!(goals: element['goals_scored'], assists: element['assists'],
                      clean_sheets: element['clean_sheets'], points: element['total_points'], position: (positions[element['element_type']]).to_s, prediction: element['ep_next'], team: Team.find_by(code: (element['team_code']).to_s))
     end
