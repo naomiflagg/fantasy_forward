@@ -81,14 +81,10 @@ class TeamOptimizer
   def recursive_create
     players = Player.all
     cache = {}
-    players.each_with_index do |player, ind|
-      team_set = Set.new
-      team_set.add(player)
-      add_player.call(player, team_set, ind)
-    end
 
     add_player = lambda do |player, team, index|
-      curr_points = cache[team]
+      puts player, team, index
+      curr_points = cache[team] || 0
       team.add(player)
 
       # Base case
@@ -116,6 +112,14 @@ class TeamOptimizer
         add_player.call(player_to_add, team, i)
       end
     end
+
+    players.each_with_index do |player, ind|
+      team_set = Set.new
+      team_set.add(player)
+      add_player.call(player, team_set, ind)
+    end
+
+    cache.max_by{ |k, v| v }
   end
 
   def calc_positions(team)
