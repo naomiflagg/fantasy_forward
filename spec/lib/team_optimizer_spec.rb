@@ -1,6 +1,5 @@
 require 'rails_helper'
 require 'team_optimizer'
-require 'pry'
 
 RSpec.describe 'team_optimizer' do
   before(:all) do
@@ -141,6 +140,12 @@ RSpec.describe 'team_optimizer' do
     it 'selects at least 11 players' do
       team = TeamOptimizer.create_team
       expect(team.length).to be >= 11
+    end
+
+    context 'when there are more than 3 players from a particular team' do
+      it 'does not add that player to the optimal team' do
+        
+      end
     end
   end
 end
